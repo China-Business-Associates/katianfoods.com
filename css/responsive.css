@@ -1,0 +1,64 @@
+@charset "utf-8";
+
+/* CSS Document */
+/* Extra large devices (large desktops, 1200px and up) */
+
+@media (min-width: 992px) and (max-width: 1200px) {  
+
+
+}
+
+/* width: 991px; */
+
+@media screen and (max-width: 61.938em) {
+.title-left-black h2{font-size: 40px;}
+.header .menu>ul>li> .lets-talk1 {background: #50a41c; font-size: 16px; color: #FFFFFF; font-weight: 500; border-radius: 30px; padding: 15px 28px; text-align: center; line-height: 20px;}
+.what-sets-us-apart ul li .content{display: block;}
+.what-sets-us-apart ul li .content .img-section{margin-bottom: 10px;}
+.services .services-content{display: block;}
+.services .services-content .left-section{width: 100%; padding: 15px;}
+.services .services-content .right-section{width: 100%; padding: 15px;}
+.contact .consultation-form{padding: 15px;}
+.footer-section .copy-right{display: block;}
+.what-sets-us-apart ul li .content .para{width: 100%; font-size: 19px;}
+.abt p{font-size: 18px; line-height: 28px;}
+.abt .box-content h4{font-size: 30px;}
+}
+
+/*============	Media 768Px Start ============ */
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+
+
+}
+
+/* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
+
+@media (min-width: 320px) and (max-width: 768px) {
+
+
+
+}
+
+@media (min-width: 768px) {
+
+
+
+}
+
+
+
+/*============ Media 300Px Star ============ */
+
+@media (max-width: 480px) {
+
+
+
+}
+
+/*============ Media 320Px Start ============ */
+
+@media (max-width: 320px) {
+
+}

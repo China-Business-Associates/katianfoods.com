@@ -1,0 +1,71 @@
+@charset "utf-8";
+/* CSS Document */
+/* :: All Transition */
+* {
+    -webkit-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.title-left-black{width: 100%; position: relative; margin-bottom: 30px; text-align: left;}
+.title-left-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000;}
+
+.title-center-black{width: 100%; position: relative; margin-bottom: 30px; text-align: center;}
+.title-center-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000;}
+
+.footer-section {background: #007037; width: 100%; float: left; position: relative; padding: 15px 0px 0px 0px}
+.footer-section .copy-right {display: flex; align-items: center; justify-content: space-between; position: relative;}
+.footer-section .copy-right p {font-size: 16px; color: #ffffff;}
+
+.contact{background: #ffffff; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.contact ul{margin: 0; padding: 0;}
+.contact ul li{list-style-type: none; display: block; font-size: 22px; margin-bottom: 15px; color: #000000;}
+.contact .consultation-form{background: #ffffff; margin: 50px 0px 40px 0px; box-shadow: 0px 0px 15px 5px #EFEFEF; padding: 40px;}
+.contact .consultation-form .form-control {border-radius: 0px; background-color: #FFFFFF; color: #000000; font-size: 14px; border: 1px solid #ced4da!important; /*margin-bottom: 15px;*/}
+.contact .consultation-form input, select {height: 50px!important; box-shadow: none; background-color: transparent;}
+.contact .consultation-form textarea {height: 80px!important; box-shadow: none; background-color: transparent;}
+.contact .consultation-form .input-group-addon:last-child {border-left: 0;}
+.contact .consultation-form label {font-size: 18px; color: #000000; font-weight: normal; margin-bottom: .5rem;}
+.contact .consultation-form p {font-size: 16px; color: #000000; font-weight: normal; margin-bottom: .2rem;}
+.contact .consultation-form p span {color: #000000; font-size: 15px;}
+.contact .consultation-form label span {color: #ff0000;}
+.contact .consultation-form .form-row>.col, .form-row>[class*=col-] {padding-right: 15px; padding-left: 15px;}
+.contact .consultation-form .btn-form-submit {background: #007037; color: #ffffff; padding: 10px 40px; border-radius: 30px; border: 1px solid #FFFFFF; font-size: 16px; font-weight: 600; text-transform: uppercase; display: inline-block;}
+.contact .consultation-form .btn-form-submit:hover {background: transparent; color: #007037; border: 1px solid #007037; transition: 0.8s linear;}
+
+.process{background: #e0feef; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.process p{font-size: 40px; text-align: center; margin-bottom: 20px; color: #000000;}
+
+.products{background: #ffffff; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.products .product-content{position: relative; margin-bottom: 30px;}
+.products .product-content .img-section{ background:#ffffff; margin-bottom:15px; box-shadow: 0px 0px 15px 5px #EFEFEF; padding: 10px;}
+.products .product-content p{font-size: 18px; color: #000000; line-height: 25px; margin-bottom: 0px;}
+
+.services{background: #ffffff; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.services .services-content{position: relative; display: flex; align-items: center;}
+.services .services-content .left-section{width: 50%; background: #ebebeb; padding: 40px 20px 20px 9%}
+.services .services-content .left-section h3{ font-size:24px; font-weight:600; margin-bottom:20px; color:#000000; }
+.services .services-content .left-section p{ font-size:24px; line-height:32px; margin-bottom:20px; }
+.services .services-content .left-section p a{color: #000000; text-decoration: underline;}
+.services .services-content .right-section{width: 50%; background: #d2d2d2; padding: 40px 9% 20px 20px}
+.services .services-content .right-section h3{ font-size:24px; font-weight:600; margin-bottom:20px; color:#000000; }
+.services .services-content .right-section p{ font-size:24px; line-height:32px; margin-bottom:20px; }
+.services .services-content .right-section p a{color: #000000; text-decoration: underline;}
+
+.what-sets-us-apart{background: #e0feef; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.what-sets-us-apart ul{margin: 0; padding: 0}
+.what-sets-us-apart ul li{list-style-type: none; display: block; border-bottom: 1px dashed #007037; padding-bottom: 25px; margin-bottom: 25px;}
+.what-sets-us-apart ul li .content{ position:relative; display:flex; align-items:center; column-gap:40px; }
+.what-sets-us-apart ul li .content .img-section{border: 1px dashed #007037; border-radius: 50%; text-align: center; width: 115px; height: 115px;}
+.what-sets-us-apart ul li .content .para{ font-size:24px; line-height:32px; color:#000000; width:85%; }
+.what-sets-us-apart ul li:last-child{border: none;}
+
+.abt{background: #ffffff; width: 100%; float: left; position: relative; padding: 40px 0px 0px 0px}
+.abt h3{ font-size:30px; font-weight:normal; color:#000000; margin-bottom:10px; }
+.abt p{ font-size:22px; line-height:34px; color:#000000; margin-bottom:20px; }
+.abt .box-content{position: relative; margin-bottom: 30px;}
+.abt .box-content img{margin-bottom: 15px;}
+.abt .box-content h4{ font-size:35px; line-height:34px; font-weight:500; margin-bottom:10px; }
+
+.desktop-banner{background: #ffffff; width: 100%; float: left; position: relative; padding: 0px 0px 0px 0px}
