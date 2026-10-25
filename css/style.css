@@ -9,10 +9,10 @@
 }
 
 .title-left-black{width: 100%; position: relative; margin-bottom: 30px; text-align: left;}
-.title-left-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000;}
+.title-left-black h1, .title-left-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000; margin-top: 0; margin-bottom: 0.5rem;}
 
 .title-center-black{width: 100%; position: relative; margin-bottom: 30px; text-align: center;}
-.title-center-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000;}
+.title-center-black h1, .title-center-black h2{font-size: 48px; text-transform: uppercase; font-weight: 600; color: #000000; margin-top: 0; margin-bottom: 0.5rem;}
 
 .footer-section {background: #007037; width: 100%; float: left; position: relative; padding: 15px 0px 0px 0px}
 .footer-section .copy-right {display: flex; align-items: center; justify-content: space-between; position: relative;}
