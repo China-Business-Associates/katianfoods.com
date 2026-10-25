@@ -375,7 +375,7 @@
       <div class="col-lg-8 col-md-12 col-sm-12 col-xl-8 offset-xl-2">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12" id="msg"></div>
         <div class="consultation-form">
-          <form action="mailto:info@katianfoods.com" name="contactForm" method="POST" id="contactForm" enctype="text/plain">
+          <form action="/api/submit" name="contactForm" method="POST" id="contactForm">
             <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputName">Name</label>
@@ -484,10 +484,10 @@ if (clickButton_phone) {
   });
 }
 
-// Mailto form handling
+// Contact form submission handling
 var contactForm = document.getElementById('contactForm');
 if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
+  contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     // Check honeypot
@@ -496,31 +496,56 @@ if (contactForm) {
       return false;
     }
 
-    var name = (document.getElementById('inputName') ? document.getElementById('inputName').value : '').trim();
-    var company = (document.getElementById('companyname') ? document.getElementById('companyname').value : '').trim();
-    var dialCodeEl = document.querySelector('.iti__selected-dial-code');
-    var dialCode = dialCodeEl ? dialCodeEl.textContent.trim() : (inputElement_countryCode ? inputElement_countryCode.value : '+86');
-    var phone = (document.getElementById('phone') ? document.getElementById('phone').value : '').trim();
-    var email = (document.getElementById('inputEmail') ? document.getElementById('inputEmail').value : '').trim();
-    var inquiryType = (document.getElementById('inquiryType') ? document.getElementById('inquiryType').value : 'General Inquiry');
-    var comment = (document.getElementById('comment') ? document.getElementById('comment').value : '').trim();
-
-    var subject = 'katianfoods - Enquiry' + (name ? ': ' + name : '') + (company ? ' (' + company + ')' : '');
-    var body = 'Customer Name: ' + name + '\r\n' +
-               'Company: ' + company + '\r\n' +
-               'Contact Number: ' + dialCode + ' ' + phone + '\r\n' +
-               'Email: ' + email + '\r\n' +
-               'Inquiry Type: ' + inquiryType + '\r\n\r\n' +
-               'Comments:\r\n' + comment;
-
-    var mailtoUrl = 'mailto:info@katianfoods.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-
-    var msgBox = document.getElementById('msg');
-    if (msgBox) {
-      msgBox.innerHTML = '<div class="alert alert-success"><strong>Success!</strong> Your email client is opening to send your enquiry to info@katianfoods.com.</div>';
+    var submitBtn = contactForm.querySelector('button[type="submit"]');
+    var originalBtnText = submitBtn ? submitBtn.textContent : 'Submit';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
     }
 
-    window.location.href = mailtoUrl;
+    var dialCodeEl = document.querySelector('.iti__selected-dial-code');
+    var dialCode = dialCodeEl ? dialCodeEl.textContent.trim() : (inputElement_countryCode ? inputElement_countryCode.value : '+86');
+
+    var payload = {
+      name: (document.getElementById('inputName') ? document.getElementById('inputName').value : '').trim(),
+      company: (document.getElementById('companyname') ? document.getElementById('companyname').value : '').trim(),
+      dialCode: dialCode,
+      phone: (document.getElementById('phone') ? document.getElementById('phone').value : '').trim(),
+      email: (document.getElementById('inputEmail') ? document.getElementById('inputEmail').value : '').trim(),
+      inquiryType: (document.getElementById('inquiryType') ? document.getElementById('inquiryType').value : 'General Commercial Inquiry'),
+      comment: (document.getElementById('comment') ? document.getElementById('comment').value : '').trim(),
+      fax: fax ? fax.value : ''
+    };
+
+    var msgBox = document.getElementById('msg');
+
+    try {
+      var res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      var result = await res.json().catch(function() { return {}; });
+
+      if (res.ok && result.success !== false) {
+        if (msgBox) {
+          msgBox.innerHTML = '<div class="alert alert-success"><strong>Success!</strong> Thank you for your inquiry. We will be in touch shortly.</div>';
+        }
+        contactForm.reset();
+      } else {
+        throw new Error(result.error || 'Server error');
+      }
+    } catch (err) {
+      if (msgBox) {
+        msgBox.innerHTML = '<div class="alert alert-danger"><strong>Error!</strong> Unable to send message right now. Please try again or email info@katianfoods.com directly.</div>';
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+    }
   });
 }
 </script> 
