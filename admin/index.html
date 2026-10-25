@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Inquiries &amp; Leads | Katian Foods</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #333;
+      padding-bottom: 50px;
+    }
+    .navbar {
+      background-color: #007037;
+      border-radius: 0;
+      margin-bottom: 30px;
+      padding: 12px 20px;
+    }
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 25px;
+      padding: 24px;
+    }
+    .login-container {
+      max-width: 420px;
+      margin: 80px auto;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      border-top: none;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .table td {
+      font-size: 14px;
+      vertical-align: top;
+    }
+    .badge-inquiry {
+      background-color: #e8f5e9;
+      color: #007037;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-block;
+    }
+    .comment-cell {
+      max-width: 280px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .btn-brand {
+      background-color: #007037;
+      color: #fff;
+      border: none;
+    }
+    .btn-brand:hover, .btn-brand:focus {
+      background-color: #00562a;
+      color: #fff;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="container-fluid">
+      <span class="navbar-brand">Katian Foods &mdash; Leads Admin</span>
+      <div class="pull-right hidden" id="navActions">
+        <button class="btn btn-default btn-sm" onclick="fetchLeads()">Refresh</button>
+        <button class="btn btn-default btn-sm" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid" style="max-width: 1300px;">
+
+    <!-- Login View -->
+    <div id="loginView" class="login-container">
+      <div class="card">
+        <h4 style="margin-top:0; margin-bottom: 20px; font-weight: 700; color: #007037;">Admin Access</h4>
+        <div id="loginAlert" class="alert alert-danger hidden"></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" class="form-control" placeholder="Enter ADMIN_PASSWORD" required autofocus>
+          </div>
+          <button type="submit" class="btn btn-brand btn-block" id="loginBtn">Unlock Leads</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Leads Dashboard View -->
+    <div id="dashboardView" class="hidden">
+      <div class="row" style="margin-bottom: 15px;">
+        <div class="col-md-6 col-sm-6">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search by name, company, email, phone..." oninput="filterLeads()">
+        </div>
+        <div class="col-md-6 col-sm-6 text-right" style="padding-top: 6px;">
+          <strong id="leadCount">0</strong> inquiries recorded
+        </div>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div class="table-container">
+          <table class="table table-striped table-hover" style="margin-bottom: 0;">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Contact No.</th>
+                <th>Email</th>
+                <th>Inquiry Type</th>
+                <th>Comments</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody">
+              <tr>
+                <td colspan="8" class="text-center" style="padding: 30px; color: #777;">Loading inquiries...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    var allLeads = [];
+
+    function getSavedPassword() {
+      return sessionStorage.getItem('katian_admin_pwd') || '';
+    }
+
+    function setSavedPassword(pwd) {
+      sessionStorage.setItem('katian_admin_pwd', pwd);
+    }
+
+    function logout() {
+      sessionStorage.removeItem('katian_admin_pwd');
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('navActions').classList.add('hidden');
+      document.getElementById('adminPassword').value = '';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      var pwd = document.getElementById('adminPassword').value.trim();
+      if (!pwd) return;
+
+      var loginBtn = document.getElementById('loginBtn');
+      var alertBox = document.getElementById('loginAlert');
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Verifying...';
+      alertBox.classList.add('hidden');
+
+      setSavedPassword(pwd);
+      var ok = await fetchLeads();
+      if (!ok) {
+        sessionStorage.removeItem('katian_admin_pwd');
+        alertBox.textContent = 'Invalid password or server configuration error.';
+        alertBox.classList.remove('hidden');
+      }
+
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Unlock Leads';
+    }
+
+    async function fetchLeads() {
+      var pwd = getSavedPassword();
+      if (!pwd) {
+        logout();
+        return false;
+      }
+
+      try {
+        var res = await fetch('/api/leads', {
+          headers: {
+            'x-admin-password': pwd
+          }
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            logout();
+            var alertBox = document.getElementById('loginAlert');
+            alertBox.textContent = 'Invalid password.';
+            alertBox.classList.remove('hidden');
+          }
+          return false;
+        }
+
+        var data = await res.json();
+        allLeads = data.leads || [];
+
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('dashboardView').classList.remove('hidden');
+        document.getElementById('navActions').classList.remove('hidden');
+
+        renderTable(allLeads);
+        return true;
+      } catch (err) {
+        alert('Error connecting to leads API: ' + err.message);
+        return false;
+      }
+    }
+
+    function renderTable(leads) {
+      var tbody = document.getElementById('leadsTableBody');
+      document.getElementById('leadCount').textContent = leads.length;
+
+      if (!leads.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding: 40px; color: #888;">No inquiries found.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < leads.length; i++) {
+        var item = leads[i];
+        var dateStr = item.created_at ? new Date(item.created_at.replace(' ', 'T') + 'Z').toLocaleString() : '-';
+        html += '<tr>' +
+          '<td>' + (item.id || (i + 1)) + '</td>' +
+          '<td style="white-space:nowrap; font-size:12px; color:#666;">' + escapeHtml(dateStr) + '</td>' +
+          '<td><strong>' + escapeHtml(item.name || '-') + '</strong></td>' +
+          '<td>' + escapeHtml(item.company || '-') + '</td>' +
+          '<td><a href="tel:' + escapeHtml(item.phone || '') + '">' + escapeHtml(item.phone || '-') + '</a></td>' +
+          '<td><a href="mailto:' + escapeHtml(item.email || '') + '">' + escapeHtml(item.email || '-') + '</a></td>' +
+          '<td><span class="badge-inquiry">' + escapeHtml(item.inquiry_type || 'General') + '</span></td>' +
+          '<td class="comment-cell">' + escapeHtml(item.comment || '-') + '</td>' +
+        '</tr>';
+      }
+      tbody.innerHTML = html;
+    }
+
+    function filterLeads() {
+      var term = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      if (!term) {
+        renderTable(allLeads);
+        return;
+      }
+
+      var filtered = allLeads.filter(function(item) {
+        return (item.name && item.name.toLowerCase().indexOf(term) > -1) ||
+               (item.company && item.company.toLowerCase().indexOf(term) > -1) ||
+               (item.email && item.email.toLowerCase().indexOf(term) > -1) ||
+               (item.phone && item.phone.toLowerCase().indexOf(term) > -1) ||
+               (item.inquiry_type && item.inquiry_type.toLowerCase().indexOf(term) > -1) ||
+               (item.comment && item.comment.toLowerCase().indexOf(term) > -1);
+      });
+      renderTable(filtered);
+    }
+
+    function exportCSV() {
+      if (!allLeads.length) {
+        alert('No leads to export.');
+        return;
+      }
+
+      var headers = ['ID', 'Date', 'Name', 'Company', 'Phone', 'Email', 'Inquiry Type', 'Comment'];
+      var rows = [headers];
+
+      for (var i = 0; i < allLeads.length; i++) {
+        var l = allLeads[i];
+        rows.push([
+          l.id || '',
+          l.created_at || '',
+          '"' + (l.name || '').replace(/"/g, '""') + '"',
+          '"' + (l.company || '').replace(/"/g, '""') + '"',
+          '"' + (l.phone || '').replace(/"/g, '""') + '"',
+          '"' + (l.email || '').replace(/"/g, '""') + '"',
+          '"' + (l.inquiry_type || '').replace(/"/g, '""') + '"',
+          '"' + (l.comment || '').replace(/"/g, '""') + '"'
+        ]);
+      }
+
+      var csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + rows.map(function(e) { return e.join(','); }).join('\n');
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'katianfoods_leads_' + new Date().toISOString().slice(0, 10) + '.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Auto-check on load
+    if (getSavedPassword()) {
+      fetchLeads();
+    }
+  </script>
+</body>
+</html>

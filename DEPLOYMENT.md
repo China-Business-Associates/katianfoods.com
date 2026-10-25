@@ -66,9 +66,37 @@ To connect `katianfoods.com` and `www.katianfoods.com`:
 
 ---
 
-## Contact Form API (Pages Functions)
+## Contact Form & Leads System (Cloudflare D1)
 
-* **Endpoint:** `POST /api/submit`
-* **Handler:** `functions/api/submit.js`
-* Cloudflare Pages automatically discovers and executes functions placed in `functions/` without additional worker configuration.
-* Honeypot field `fax` included to mitigate spam submissions.
+* **Form Submission Endpoint:** `POST /api/submit` ([functions/api/submit.js](functions/api/submit.js))
+* **Leads Admin API:** `GET /api/leads` ([functions/api/leads.js](functions/api/leads.js))
+* **Admin Dashboard UI:** `/admin/` ([admin/index.html](admin/index.html))
+* **Database Schema:** [schema.sql](schema.sql)
+
+### Setup Steps in Cloudflare Dashboard
+
+#### 1. Create D1 Database
+1. Go to **Storage & Databases** > **D1 SQL Database** > **Create database**.
+2. Name: `katian-leads`.
+3. Click on the created database > **Console** tab.
+4. Paste and execute the contents of `schema.sql` (creates `inquiries` table).
+
+#### 2. Bind D1 to Pages Project
+1. Go to **Workers & Pages** > select `katianfoods` Pages project.
+2. Go to **Settings** > **Functions** > scroll to **D1 database bindings** > click **Add binding**.
+3. Set:
+   * **Variable name:** `DB`
+   * **D1 database:** select `katian-leads`.
+4. Click **Save**.
+
+#### 3. Add Admin Password Environment Variable
+1. In `katianfoods` Pages project > **Settings** > **Environment variables**.
+2. Click **Add variables**.
+3. Set:
+   * **Variable name:** `ADMIN_PASSWORD`
+   * **Value:** *(your chosen secret password)*
+   * **Type:** Encrypted
+4. Click **Save**.
+
+#### 4. Access Admin Dashboard
+Navigate to `https://katianfoods.com/admin/`, enter `ADMIN_PASSWORD` to view, search, and export CSV of all captured leads.

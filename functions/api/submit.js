@@ -49,9 +49,15 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // Ready for Cloudflare Email Routing / D1 / External webhook dispatch
-    // e.g.:
-    // if (env.DB) await env.DB.prepare("INSERT INTO inquiries ...").run();
+    // Persist to Cloudflare D1 if database is bound
+    if (env.DB) {
+      const fullPhone = dialCode ? `${dialCode} ${phone}` : phone;
+      await env.DB.prepare(
+        "INSERT INTO inquiries (name, company, phone, email, inquiry_type, comment) VALUES (?, ?, ?, ?, ?, ?)"
+      )
+        .bind(name, company, fullPhone, email, inquiryType, comment)
+        .run();
+    }
 
     return new Response(
       JSON.stringify({
