@@ -1,0 +1,26 @@
+name: Lint & Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint Worker & Validate Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lint Worker Code
+        run: npx -y eslint src/
+
+      - name: Validate Wrangler Config & Assets
+        run: npx -y wrangler deploy --dry-run
