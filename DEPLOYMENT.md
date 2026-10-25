@@ -77,7 +77,7 @@ To connect `katianfoods.com` and `www.katianfoods.com`:
 
 #### 1. Create D1 Database
 1. Go to **Storage & Databases** > **D1 SQL Database** > **Create database**.
-2. Name: `katian-leads`.
+2. Name: `katianfoods`.
 3. Click on the created database > **Console** tab.
 4. Paste and execute the contents of `schema.sql` (creates `inquiries` table).
 
@@ -86,7 +86,7 @@ To connect `katianfoods.com` and `www.katianfoods.com`:
 2. Go to **Settings** > **Functions** > scroll to **D1 database bindings** > click **Add binding**.
 3. Set:
    * **Variable name:** `DB`
-   * **D1 database:** select `katian-leads`.
+   * **D1 database:** select `katianfoods`.
 4. Click **Save**.
 
 #### 3. Add Admin Password Environment Variable
