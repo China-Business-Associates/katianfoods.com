@@ -1,3 +1,9 @@
+# Environment & Secrets
+.env
+.env.*
+*.key
+*.pem
+
 # Operating System
 .DS_Store
 .DS_Store?
