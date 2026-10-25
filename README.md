@@ -19,7 +19,7 @@ Deployment guide for `katianfoods.com` using Cloudflare Workers with Static Asse
 katianfoods/
 ├── wrangler.jsonc       # Worker config: assets directory + D1 binding
 ├── src/
-│   └── index.js         # API router (/api/contact, /api/submit, /api/leads, static fallback)
+│   └── index.js         # API router (/api/contact, /api/leads, static fallback)
 ├── public/              # Static site assets
 │   ├── index.html       # Homepage with contact form
 │   ├── contact.html     # Dedicated contact form

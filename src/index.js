@@ -2,11 +2,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // 1. Contact form submission endpoints
-    if (
-      (url.pathname === "/api/contact" || url.pathname === "/api/submit") &&
-      request.method === "POST"
-    ) {
+    // 1. Contact form submission endpoint
+    if (url.pathname === "/api/contact" && request.method === "POST") {
       try {
         let body;
         const contentType = request.headers.get("content-type") || "";
