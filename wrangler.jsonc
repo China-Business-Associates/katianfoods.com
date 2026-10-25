@@ -12,5 +12,16 @@
       "database_name": "katianfoods",
       "database_id": "10ee9297-488b-40b0-a733-b9b85f5ff4b9"
     }
-  ]
+  ],
+  "routes": [
+    {
+      "pattern": "katianfoods.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.katianfoods.com",
+      "custom_domain": true
+    }
+  ],
+  "workers_dev": false
 }
