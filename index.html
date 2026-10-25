@@ -534,11 +534,12 @@ if (contactForm) {
         }
         contactForm.reset();
       } else {
-        throw new Error(result.error || 'Server error');
+        var errorMsg = result.error || ('Server error (' + res.status + ')');
+        throw new Error(errorMsg);
       }
     } catch (err) {
       if (msgBox) {
-        msgBox.innerHTML = '<div class="alert alert-danger"><strong>Error!</strong> Unable to send message right now. Please try again or email info@katianfoods.com directly.</div>';
+        msgBox.innerHTML = '<div class="alert alert-danger"><strong>Error:</strong> ' + (err.message || 'Unable to send message right now. Please try again or email info@katianfoods.com directly.') + '</div>';
       }
     } finally {
       if (submitBtn) {
