@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact &mdash; Katian Foods</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 3rem auto; padding: 0 1rem; color: #333; }
+    form { display: grid; gap: 0.75rem; }
+    input, select, textarea, button { padding: 0.6rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; width: 100%; }
+    button { background: #007037; color: #fff; border: none; cursor: pointer; font-weight: 600; }
+    button:hover { background: #00562a; }
+    .msg { padding: 0.75rem; border-radius: 6px; display: none; margin-bottom: 1rem; }
+    .msg.ok { display: block; background: #e6f4ea; color: #1e6e3a; }
+    .msg.err { display: block; background: #fce8e6; color: #a50e0e; }
+  </style>
+</head>
+<body>
+  <h1>Contact Katian Foods</h1>
+  <div id="msg" class="msg"></div>
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Name" />
+    <input type="text" name="company" placeholder="Company" />
+    <input type="tel" name="phone" placeholder="Phone" />
+    <input type="email" name="email" placeholder="Email" required />
+    <select name="inquiry_type">
+      <option value="">Inquiry type (optional)</option>
+      <option value="Product Sourcing & Bulk Commodity Import">Product Sourcing &amp; Bulk Commodity Import</option>
+      <option value="Supplier & Export Representation">Supplier &amp; Export Representation</option>
+      <option value="Distribution & Wholesale Partnership">Distribution &amp; Wholesale Partnership</option>
+      <option value="Corporate Acquisition / M&A">Corporate Acquisition / M&amp;A</option>
+      <option value="General Commercial Inquiry">General Commercial Inquiry</option>
+    </select>
+    <textarea name="comment" placeholder="Your message" rows="5"></textarea>
+    <div style="display:none;">
+      <input type="text" name="fax" autocomplete="off" />
+    </div>
+    <button type="submit" id="submitBtn">Send</button>
+  </form>
+
+  <script>
+    const msg = document.getElementById("msg");
+    const form = document.getElementById("contact-form");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = "Sending...";
+
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json().catch(() => ({}));
+        const success = res.ok && (result.ok || result.success);
+
+        msg.textContent = success ? "Message sent! We will be in touch shortly." : (result.error || "Submission failed.");
+        msg.className = "msg " + (success ? "ok" : "err");
+        if (success) form.reset();
+      } catch (err) {
+        msg.textContent = "Network error. Please try again.";
+        msg.className = "msg err";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Send";
+      }
+    });
+  </script>
+</body>
+</html>

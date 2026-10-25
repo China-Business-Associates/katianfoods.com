@@ -19,3 +19,8 @@ Thumbs.db
 *.tmp
 *.bak
 *.old
+
+# Cloudflare / Wrangler
+.wrangler/
+_worker.bundle/
+node_modules/

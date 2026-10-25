@@ -1,102 +1,72 @@
-# Cloudflare Pages Deployment
+# Katian Foods &mdash; Cloudflare Worker Deployment
 
-Documentation for deploying `katianfoods.com` to Cloudflare Pages.
+Deployment guide for `katianfoods.com` using Cloudflare Workers with Static Assets and Cloudflare D1.
 
 ---
 
 ## Architecture Overview
-* **Type:** Static HTML/CSS/JS (no framework or build pipeline).
-* **Source:** Root directory (`index.html`).
-* **Hosting:** Cloudflare Pages (Free Tier: unlimited bandwidth, free SSL).
+* **Type:** Cloudflare Worker with Static Assets
+* **Entrypoint:** `src/index.js`
+* **Static Assets:** `public/` (contains `index.html`, `contact.html`, `admin/`, CSS, images, JS)
+* **Database:** Cloudflare D1 (`katianfoods` / ID: `10ee9297-488b-40b0-a733-b9b85f5ff4b9`)
+* **Config:** `wrangler.jsonc`
 
 ---
 
-## Method 1: Git Integration (Recommended)
+## Project Structure
 
-Automatic deployment on every `git push` to `main`.
-
-### Setup Steps
-1. Navigate to [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Compute (Workers & Pages)**.
-2. Click **Create** > **Pages** > **Connect to Git**.
-3. Authorize GitHub and select repository: `China-Business-Associates/katianfoods.com`.
-4. Configure build settings:
-   * **Project name:** `katianfoods`
-   * **Production branch:** `main`
-   * **Framework preset:** `None`
-   * **Build command:** *(leave empty)*
-   * **Build output directory:** `/` (or leave blank for root)
-5. Click **Save and Deploy**.
-
-Subsequent pushes to `main` trigger automated builds and deployments.
-
----
-
-## Method 2: Manual CLI Deployment
-
-Deploy directly from terminal using Wrangler.
-
-### Prerequisites
-* Node.js / npm installed
-* Authenticated Wrangler CLI
-
-### Commands
-```bash
-# Authenticate (first time only)
-npx wrangler login
-
-# Deploy root directory to production
-npx wrangler pages deploy . --project-name=katianfoods --branch=main
+```
+katianfoods/
+├── wrangler.jsonc       # Worker config: assets directory + D1 binding
+├── src/
+│   └── index.js         # API router (/api/contact, /api/submit, /api/leads, static fallback)
+├── public/              # Static site assets
+│   ├── index.html       # Homepage with contact form
+│   ├── contact.html     # Dedicated contact form
+│   ├── admin/           # Admin leads dashboard
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── schema.sql           # inquiries table schema (reference)
+└── DEPLOYMENT.md
 ```
 
 ---
 
-## Custom Domain Configuration
+## Deployment via Wrangler CLI
 
-To connect `katianfoods.com` and `www.katianfoods.com`:
+Deploy directly to Cloudflare:
 
-1. In Cloudflare Dashboard, open the **katianfoods** Pages project.
-2. Select **Custom domains** tab > **Set up a custom domain**.
-3. Add apex domain: `katianfoods.com`.
-4. Repeat and add subdomain: `www.katianfoods.com`.
-5. **DNS Setup:**
-   * **If nameservers managed by Cloudflare:** Cloudflare automatically configures CNAME/alias records and provisions SSL certificates.
-   * **If DNS managed externally:** Add CNAME records pointing to `katianfoods.pages.dev`:
-     * Host: `@` -> Target: `katianfoods.pages.dev`
-     * Host: `www` -> Target: `katianfoods.pages.dev`
+```bash
+# 1. Authenticate with Cloudflare (first time only)
+npx wrangler login
+
+# 2. Deploy Worker and Static Assets to Production
+npx wrangler deploy
+```
+
+This single command:
+1. Uploads all static files from `public/`.
+2. Compiles and deploys `src/index.js` handling `POST /api/contact` and `GET /api/leads`.
+3. Attaches the `DB` binding to the `katianfoods` D1 database.
 
 ---
 
-## Contact Form & Leads System (Cloudflare D1)
+## Environment Variables (Admin Password)
 
-* **Form Submission Endpoint:** `POST /api/submit` ([functions/api/submit.js](functions/api/submit.js))
-* **Leads Admin API:** `GET /api/leads` ([functions/api/leads.js](functions/api/leads.js))
-* **Admin Dashboard UI:** `/admin/` ([admin/index.html](admin/index.html))
-* **Database Schema:** [schema.sql](schema.sql)
+To set the password for the `/admin/` dashboard:
 
-### Setup Steps in Cloudflare Dashboard
+```bash
+# Set encrypted secret in production
+npx wrangler secret put ADMIN_PASSWORD
+```
+Or configure in Cloudflare Dashboard: **Workers & Pages** > `katianfoods` > **Settings** > **Variables and Secrets**.
 
-#### 1. Create D1 Database
-1. Go to **Storage & Databases** > **D1 SQL Database** > **Create database**.
-2. Name: `katianfoods`.
-3. Click on the created database > **Console** tab.
-4. Paste and execute the contents of `schema.sql` (creates `inquiries` table).
+---
 
-#### 2. Bind D1 to Pages Project
-1. Go to **Workers & Pages** > select `katianfoods` Pages project.
-2. Go to **Settings** > **Functions** > scroll to **D1 database bindings** > click **Add binding**.
-3. Set:
-   * **Variable name:** `DB`
-   * **D1 database:** select `katianfoods`.
-4. Click **Save**.
+## Custom Domain
 
-#### 3. Add Admin Password Environment Variable
-1. In `katianfoods` Pages project > **Settings** > **Environment variables**.
-2. Click **Add variables**.
-3. Set:
-   * **Variable name:** `ADMIN_PASSWORD`
-   * **Value:** *(your chosen secret password)*
-   * **Type:** Encrypted
-4. Click **Save**.
-
-#### 4. Access Admin Dashboard
-Navigate to `https://katianfoods.com/admin/`, enter `ADMIN_PASSWORD` to view, search, and export CSV of all captured leads.
+Attach `katianfoods.com` and `www.katianfoods.com`:
+1. In Cloudflare Dashboard, navigate to **Workers & Pages** > `katianfoods`.
+2. Go to **Settings** > **Domains & Routes** > **Custom Domains**.
+3. Add `katianfoods.com` and `www.katianfoods.com`.

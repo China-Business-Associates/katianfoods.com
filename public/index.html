@@ -375,7 +375,7 @@
       <div class="col-lg-8 col-md-12 col-sm-12 col-xl-8 offset-xl-2">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12" id="msg"></div>
         <div class="consultation-form">
-          <form action="/api/submit" name="contactForm" method="POST" id="contactForm">
+          <form action="/api/contact" name="contactForm" method="POST" id="contactForm">
             <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputName">Name</label>
@@ -520,7 +520,7 @@ if (contactForm) {
     var msgBox = document.getElementById('msg');
 
     try {
-      var res = await fetch('/api/submit', {
+      var res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
